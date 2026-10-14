@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Gaming Statistics Dashboard — Four Sprints Journey</title>
+    <style>
+      :root {
+        --bg: #f7f8fb;
+        --pn: #fff;
+        --ln: #e2e6ef;
+        --tx: #151a2e;
+        --mu: #5d6784;
+        --s1: #d97706;
+        --s2: #4f46e5;
+        --s3: #0d9488;
+        box-sizing: border-box;
+      }
+      * {
+        box-sizing: inherit;
+        margin: 0;
+      }
+      html,
+      body {
+        height: 100%;
+        background: #e9ebf3;
+        color: var(--tx);
+        font-family:
+          "Noto Sans Thai", "Sarabun", "Segoe UI", system-ui, sans-serif;
+        overflow: hidden;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      #st {
+        width: min(100vw, calc((100vh - 44px) * 1.7778));
+        aspect-ratio: 16/9;
+        container-type: inline-size;
+        position: relative;
+        background: var(--bg);
+      }
+      .s {
+        position: absolute;
+        inset: 0;
+        padding: 3.6cqw 5cqw;
+        display: none;
+        flex-direction: column;
+        font-size: 1.6cqw;
+      }
+      .s.on {
+        display: flex;
+      }
+      .k {
+        font-weight: 700;
+        font-size: 1.3cqw;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 0.4cqw;
+      }
+      h1 {
+        font-size: 6cqw;
+        line-height: 1.08;
+        font-weight: 800;
+      }
+      h2 {
+        font-size: 3cqw;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 0.4cqw;
+      }
+      .sb {
+        color: var(--mu);
+        margin-bottom: 1.4cqw;
+      }
+      .g {
+        display: grid;
+        gap: 1.1cqw;
+        align-content: start;
+      }
+      .c {
+        background: var(--pn);
+        border: 1px solid var(--ln);
+        border-radius: 0.9cqw;
+        padding: 1.1cqw 1.4cqw;
+        border-top: 0.3cqw solid var(--a, var(--ln));
+      }
+      .c b {
+        display: block;
+        font-size: 1.75cqw;
+        margin-bottom: 0.3cqw;
+      }
+      .c p,
+      .c li {
+        color: var(--mu);
+        line-height: 1.45;
+      }
+      .c ul {
+        padding-left: 1.4cqw;
+      }
+      .fl {
+        display: flex;
+        align-items: stretch;
+        gap: 0.6cqw;
+      }
+      .fl > .c {
+        flex: 1;
+      }
+      .ar {
+        align-self: center;
+        font-size: 2cqw;
+        color: var(--mu);
+      }
+      .p {
+        display: inline-block;
+        border: 1px solid var(--ln);
+        background: var(--pn);
+        border-radius: 99cqw;
+        padding: 0.35cqw 1cqw;
+        margin: 0 0.4cqw 0.5cqw 0;
+        font-size: 1.35cqw;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--pn);
+        border: 1px solid var(--ln);
+        border-radius: 0.8cqw;
+      }
+      td,
+      th {
+        padding: 0.65cqw 0.9cqw;
+        border-bottom: 1px solid var(--ln);
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        color: var(--mu);
+        font-weight: 600;
+      }
+      .r1 {
+        --a: var(--s1);
+      }
+      .r2 {
+        --a: var(--s2);
+      }
+      .r3 {
+        --a: var(--s3);
+      }
+      .t1 {
+        color: var(--s1);
+      }
+      .t2 {
+        color: var(--s2);
+      }
+      .t3 {
+        color: var(--s3);
+      }
+      .warn {
+        border-left: 0.3cqw solid var(--s1);
+        background: #fffaf0;
+      }
+      .src {
+        position: absolute;
+        right: 5cqw;
+        bottom: 1.2cqw;
+        font-size: 1.05cqw;
+        color: #9aa3bd;
+      }
+      .nt {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #151a2ef0;
+        color: #fff;
+        padding: 1cqw 2cqw;
+        font-size: 1.4cqw;
+        line-height: 1.5;
+        z-index: 5;
+      }
+      #st.sn .s.on .nt {
+        display: block;
+      }
+      #bar {
+        height: 44px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        color: var(--mu);
+        font-size: 14px;
+      }
+      #bar button {
+        background: var(--pn);
+        color: var(--tx);
+        border: 1px solid var(--ln);
+        border-radius: 8px;
+        padding: 6px 14px;
+        cursor: pointer;
+        font: inherit;
+      }
+      #bar button:focus-visible {
+        outline: 2px solid var(--s2);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="st"></div>
+    <div id="bar">
+      <button id="p" aria-label="Previous slide">◀</button><span id="c"></span
+      ><button id="x" aria-label="Next slide">▶</button
+      ><span>← → เปลี่ยนสไลด์ · N = Speaker Notes</span>
+    </div>
+    <script>
+      var H = function (a) {
+        return a
+          .map(function (x) {
+            return "<li>" + x + "</li>";
+          })
+          .join("");
+      };
+      var C = function (t, b, r) {
+        return (
+          '<div class="c ' + (r || "") + '"><b>' + t + "</b>" + b + "</div>"
+        );
+      };
+      var P = function (a) {
+        return a
+          .map(function (x) {
+            return '<span class="p">' + x + "</span>";
+          })
+          .join("");
+      };
+      var L = function (a, r) {
+        return "<ul>" + H(a) + "</ul>";
+      };
+      var cols = function (n, h) {
+        return (
+          '<div class="g" style="grid-template-columns:repeat(' +
+          n +
+          ',1fr)">' +
+          h +
+          "</div>"
+        );
+      };
+      var TL = function (a, r) {
+        return (
+          '<div class="g" style="grid-template-columns:repeat(' +
+          a.length +
+          ',1fr)">' +
+          a
+            .map(function (d) {
+              return C(d[0], "<p>" + d[1] + "</p>", r);
+            })
+            .join("") +
+          "</div>"
+        );
+      };
+      var WW = function (w, h, r) {
+        return cols(2, C("⭐ WOW", L(w), r) + C("⚠️ WHOOPS", L(h), r));
+      };
+      var Q = function (v, l, r) {
+        return (
+          '<div class="c ' +
+          (r || "") +
+          '" style="text-align:center"><div style="font-size:3.6cqw;font-weight:800;color:var(--a)">' +
+          v +
+          "</div><p>" +
+          l +
+          "</p></div>"
+        );
+      };
+      var RC = {
+        Planner: "var(--s1)",
+        Coder: "var(--s2)",
+        Debugger: "var(--s3)",
+      };
+      var R = function (x) {
+        return (
+          '<span class="p" style="border-color:' +
+          RC[x] +
+          ";color:" +
+          RC[x] +
+          ';font-weight:700;margin:0">' +
+          x +
+          "</span>"
+        );
+      };
+      var S = [
+        {
+          k: "Final Term Project · CP352301 Script Programming",
+          c: 1,
+          r: 2,
+          t: '<h1>Gaming Statistics<br>Dashboard</h1><p style="font-size:2.5cqw;margin-top:1.2cqw;font-weight:700">From Sprint 1 to Final Sprint</p><p class="sb" style="margin-top:.5cqw">Our Development Journey · From CLI to Complete Dashboard<br>คิม · ฟลุ๊ค · ออม</p><p><span class="p" style="border-color:var(--s1)">Sprint 1</span><span class="p" style="border-color:var(--s2)">Sprint 2</span><span class="p" style="border-color:var(--s3)">Sprint 3</span><span class="p" style="background:#151a2e;color:#fff">Final Sprint</span></p>',
+          n: "วันนี้จะเล่าเส้นทางการพัฒนาโปรเจกต์ตลอดสี่ Sprint",
+          src: "Sprint_1–3.md, Final_Sprint.md",
+        },
+        {
+          k: "The Idea",
+          h: "โปรเจกต์นี้คืออะไร",
+          r: 2,
+          t:
+            '<div class="fl">' +
+            C(
+              "Project Idea",
+              "<p>Dashboard สถิติเกม: แสดงข้อมูลเกม ค้นหา และวิเคราะห์เป็น Statistics</p>",
+              "r1",
+            ) +
+            '<span class="ar">→</span>' +
+            C(
+              "Solution ที่พัฒนา",
+              "<p>Web Application บน Streamlit ใช้ข้อมูลจาก RAWG และ Steam เก็บใน SQLite วิเคราะห์ด้วย Pandas</p>",
+              "r2",
+            ) +
+            '</div><p class="sb warn" style="padding:.8cqw 1.1cqw;margin-top:1.4cqw">เอกสารไม่ได้เขียน Problem Statement แยกไว้ — สไลด์นี้สรุปจากเป้าหมายและ Technology Stack ที่ระบุใน Pitch/Sprint Report</p>',
+          n: "เอกสารบอกเป้าหมายระบบ แต่ไม่ได้เขียนปัญหาต้นทางโดยตรง จึงเล่าแค่ที่มีหลักฐาน",
+          src: "S1 §1, §22; S2 §7; S3 §9",
+        },
+        {
+          k: "Roadmap",
+          h: "4 Sprints, One Complete Project",
+          r: 2,
+          t: TL([
+            [
+              "Sprint 1 · 10–15 ก.ย.",
+              "Foundation<br>CLI + Local Sample Dataset",
+            ],
+            [
+              "Sprint 2 · 20–24 ก.ย.",
+              "Transformation<br>Streamlit + RAWG/Steam + SQLite",
+            ],
+            [
+              "Sprint 3 · 25–29 ก.ย.",
+              "Intelligence<br>Statistics · Visualization · Filter/Sort · Comparison",
+            ],
+            [
+              "Final Sprint · 2–6 ต.ค. (ตามแผน)",
+              "Stabilization<br>Integration · Bug Fixing · QA · เอกสาร",
+            ],
+          ]).replace(/<div class="c ">/g, '<div class="c">'),
+          n: "สี่ Sprint ต่อเนื่องกัน ชื่อ Foundation/Transformation/Intelligence/Stabilization เป็นชื่อที่ใช้เล่าเรื่อง",
+          src: "Header ของทุกไฟล์",
+        },
+        {
+          k: "Sprint 1 · Foundation",
+          h: "เริ่มจาก CLI",
+          r: 1,
+          t:
+            '<div class="fl">' +
+            C(
+              "Challenge",
+              "<p>สร้าง Foundation และทดสอบโครงสร้างหลักก่อนทำเว็บ</p>",
+              "r1",
+            ) +
+            '<span class="ar">→</span>' +
+            C(
+              "What We Built",
+              "<p>CLI · Main Menu · View Games · Search · Statistics · Genres · Top Rated · Input Validation</p>",
+              "r1",
+            ) +
+            '<span class="ar">→</span>' +
+            C(
+              "Achieved",
+              "<p>QA: 14 Test Cases, Passed 14, Critical Bugs 0</p>",
+              "r1",
+            ) +
+            '</div><p class="sb" style="margin-top:1.4cqw">ใช้ Local Sample Dataset · ยังไม่มี RAWG API / SQLite / Web UI · Role: คิม=Planner · ฟลุ๊ค=Coder · ออม=Debugger</p>',
+          n: "Sprint 1 จงใจจำกัดขอบเขตเพื่อทดสอบโครงสร้างพื้นฐานก่อน",
+          src: "S1 §1–4, §15",
+        },
+        {
+          k: "Sprint 1 · Feedback",
+          h: "From Feedback to Improvement",
+          r: 1,
+          t: '<table><tr><th>Feedback ที่บันทึก</th><th>Action</th><th>ปรากฏต่อมา</th></tr><tr><td>Pitch: อธิบาย Project ให้ชัด</td><td>ระบุ Web App, Streamlit, RAWG, Pandas, SQLite, Architecture</td><td>Sprint 2 ใช้ Streamlit / RAWG / SQLite / Pandas</td></tr><tr><td>Plan: ตารางเวลา / งาน / Metrics</td><td>Plan.md เป็น Master Plan ทั้ง Project</td><td>อัปเดตต่อใน Sprint 3 และ Final</td></tr><tr><td>Documentation</td><td>เพิ่ม Change Log + Learning Log</td><td>อยู่ใน DoD Sprint 2, 3 และ Final</td></tr><tr><td>Metrics ติดตามสมาชิก</td><td>เพิ่ม Contribution Matrix</td><td>มีใน Sprint 1 และ Sprint 2</td></tr></table><p class="sb" style="margin-top:.9cqw">บันทึกเป็นการสรุปของทีม ไม่มีคำพูดตรงของอาจารย์ · เอกสารไม่ระบุว่า Feedback เป็นสาเหตุของ Feature ใน Sprint 2</p>',
+          n: "Feedback ครั้งนี้เน้นเอกสารและการวางแผน ไม่ใช่ Feature",
+          src: "S1 §22–27; S2 §32; S3 §30",
+        },
+        {
+          k: "Sprint 2 · Transformation",
+          h: "จาก CLI สู่ Web Application",
+          r: 2,
+          t:
+            '<div class="fl">' +
+            C("Before", "<p>Python CLI<br>Local Sample Dataset</p>", "r1") +
+            '<span class="ar">→</span>' +
+            C(
+              "After",
+              "<p>Streamlit Web Application<br>RAWG API · Steam API · SQLite<br>Game Service · Data Processing</p>",
+              "r2",
+            ) +
+            "</div>" +
+            cols(
+              2,
+              C(
+                "ทำไมสำคัญ",
+                "<p>ใช้งานผ่าน Web Browser ด้วยข้อมูลเกมจริง และแยก API / Database / Service / Components</p>",
+                "r2",
+              ) +
+                C(
+                  "Features",
+                  "<p>Home · Library · Search · Genres · Top Rated · Live Players · Game Detail · Pagination</p>",
+                  "r2",
+                ),
+            ).replace(
+              '<div class="g"',
+              '<div style="margin-top:1.2cqw" class="g"',
+            ),
+          n: "จุดเปลี่ยนสำคัญคือระบบกลายเป็นเว็บที่ดึงข้อมูลจริงและเก็บลงฐานข้อมูล",
+          src: "S2 §1–2, §14–22, §33",
+        },
+        {
+          k: "Sprint 3 · Intelligence",
+          h: "จากข้อมูลเกม สู่ Statistics และ Visualization",
+          r: 3,
+          t:
+            '<div class="fl">' +
+            C("Raw Data", "<p>RAWG nested</p>", "") +
+            '<span class="ar">→</span>' +
+            C("Processing", "<p>Normalize · Type conversion</p>", "r3") +
+            '<span class="ar">→</span>' +
+            C(
+              "Analysis",
+              "<p>Descriptive Statistics · Frequency / Proportion (Pandas)</p>",
+              "r3",
+            ) +
+            '<span class="ar">→</span>' +
+            C(
+              "Visualization",
+              "<p>Statistics Page · 6 ส่วน (Altair)</p>",
+              "r3",
+            ) +
+            "</div>" +
+            cols(
+              2,
+              C(
+                "Advanced Features",
+                "<p>Filter 4 แบบ · Sort 3 แบบ · Game A vs B</p>",
+                "r3",
+              ) +
+                C(
+                  "Scope จริง",
+                  "<p>Descriptive Statistics เท่านั้น · ไม่มี Group Testing / ML</p>",
+                  "r1",
+                ),
+            ).replace(
+              '<div class="g"',
+              '<div style="margin-top:1.2cqw" class="g"',
+            ),
+          n: "Sprint 3 ไม่ได้เพิ่มแค่หน้าจอ แต่เพิ่ม Analysis Layer ที่แยกจาก UI",
+          src: "S3 §1–4, §9, §13–14",
+        },
+        {
+          k: "Final Sprint · Stabilization",
+          h: "ทำให้ทุกส่วนทำงานร่วมกัน",
+          r: 2,
+          t:
+            '<div class="fl">' +
+            C(
+              "Integration",
+              "<p>Streamlit · RAWG/Steam · GameService · SQLite · Pandas</p>",
+              "r2",
+            ) +
+            '<span class="ar">→</span>' +
+            C(
+              "Stabilization",
+              "<p>API failures · malformed data · pagination · DB rollback</p>",
+              "r3",
+            ) +
+            '<span class="ar">→</span>' +
+            C(
+              "Testing",
+              "<p>128 tests · AppTest 9 workflows (ตามรายงาน QA)</p>",
+              "r3",
+            ) +
+            '<span class="ar">→</span>' +
+            C(
+              "Delivery",
+              "<p>README · Plan · Changelog · Learning Log · CI · clean delivery copy</p>",
+              "r1",
+            ) +
+            '</div><p class="sb" style="margin-top:1.3cqw">ปรับปรุงเด่น: RAWG cache 24 ชม. / Steam snapshot 15 นาที · Home จำกัดที่ SQL · DataFrame ใช้ร่วมกัน</p>',
+          n: "รอบสุดท้ายเน้นคุณภาพและความน่าเชื่อถือ มากกว่าเพิ่ม Feature",
+          src: "Final_Sprint.md",
+        },
+        {
+          k: "Evolution",
+          h: "หลังแต่ละ Sprint ระบบทำอะไรได้เพิ่ม",
+          t: TL([
+            ["Sprint 1", "เมนู · ค้นหา · Statistics พื้นฐาน บน CLI"],
+            ["+ Sprint 2", "เว็บ · RAWG/Steam · SQLite · Pages · Pagination"],
+            [
+              "+ Sprint 3",
+              "Statistics · กราฟ 6 ชุด · Filter · Sort · Comparison",
+            ],
+            [
+              "+ Final",
+              "Cache แยกอายุ · Error handling · Config/CI · QA report",
+            ],
+          ])
+            .replace('<div class="c ">', '<div class="c r1">')
+            .replace('<div class="c ">', '<div class="c r2">')
+            .replace('<div class="c ">', '<div class="c r3">'),
+          n: "ภาพรวมสะสมของความสามารถทีละ Sprint",
+          src: "ทั้ง 4 ไฟล์",
+        },
+        {
+          k: "Team",
+          h: "One Team, Three Roles, Four Sprints",
+          t:
+            "<table><tr><th></th><th>Sprint 1</th><th>Sprint 2</th><th>Sprint 3</th><th>Final Sprint</th></tr><tr><td><b>ชิษณุพงศ์ ซู</b></td><td>" +
+            R("Planner") +
+            "</td><td>" +
+            R("Debugger") +
+            "</td><td>" +
+            R("Coder") +
+            "</td><td>" +
+            R("Planner") +
+            "</td></tr><tr><td><b>ภานุวัฒน์ ผองแก้ว</b></td><td>" +
+            R("Coder") +
+            "</td><td>" +
+            R("Planner") +
+            "</td><td>" +
+            R("Debugger") +
+            "</td><td>" +
+            R("Coder") +
+            "</td></tr><tr><td><b>เดโชชิต โตวินัส</b></td><td>" +
+            R("Debugger") +
+            "</td><td>" +
+            R("Coder") +
+            "</td><td>" +
+            R("Planner") +
+            "</td><td>" +
+            R("Debugger") +
+            "</td></tr></table>" +
+            cols(
+              3,
+              C(
+                "Planner",
+                "<p>Scope, Requirements, แบ่งงาน, Documentation</p>",
+                "r1",
+              ) +
+                C("Coder", "<p>พัฒนา Feature และเชื่อมต่อระบบ</p>", "r2") +
+                C(
+                  "Debugger",
+                  "<p>Testing, Edge Cases, Bug Verification</p>",
+                  "r3",
+                ),
+            ).replace(
+              '<div class="g"',
+              '<div style="margin-top:1.1cqw" class="g"',
+            ) +
+            '<p class="sb" style="margin-top:.8cqw">ทุกคนได้ลองวางแผน พัฒนา และทดสอบ · Final Sprint เป็นบทบาทตามแผน ไม่มี daily contribution ในเอกสาร</p>',
+          n: "ตารางตรงกับเอกสารทั้งสี่ฉบับ",
+          src: "S1–S3 §3; Final เป้าหมายและบทบาท",
+        },
+        {
+          k: "WOW",
+          h: "What Went Well",
+          r: 3,
+          t: cols(
+            3,
+            C(
+              "Modular ตั้งแต่ Sprint 1",
+              "<p>แยก Function ตามหน้าที่</p><p><i>หลักฐาน:</i> Sprint 1 WOW</p>",
+              "r1",
+            ) +
+              C(
+                "CLI → Web Application",
+                "<p>แยก API / DB / Service / Processing / Components ทดสอบแยกได้</p><p><i>หลักฐาน:</i> Sprint 2 WOW</p>",
+                "r2",
+              ) +
+              C(
+                "Steam Live Players",
+                "<p>ข้อมูลเปลี่ยนตามสถานการณ์จริง</p><p><i>หลักฐาน:</i> Sprint 2 WOW</p>",
+                "r2",
+              ) +
+              C(
+                "Analysis Layer แยกจาก UI",
+                "<p>รองรับข้อมูลไม่สมบูรณ์ ทดสอบด้วย Unit Tests</p><p><i>หลักฐาน:</i> Sprint 3 DoD</p>",
+                "r3",
+              ) +
+              C(
+                "QA ที่เติบโต",
+                "<p>14 Test Cases (S1) → AppTest + Automated Tests (S3)</p><p><i>หลักฐาน:</i> Sprint 1, 3 QA</p>",
+                "r3",
+              ) +
+              C(
+                "ตรวจ clean delivery copy",
+                "<p>128 tests passed ตามรายงาน QA 13 ต.ค.</p><p><i>หลักฐาน:</i> Final QA</p>",
+                "r3",
+              ),
+          ),
+          n: "เลือกเฉพาะผลงานที่มีหลักฐานในเอกสาร",
+          src: "Wow! ของ S1–S3; Final ผลตรวจ",
+        },
+        {
+          k: "WHOOPS",
+          h: "What Didn’t Go as Planned",
+          r: 1,
+          t: cols(
+            3,
+            C(
+              "Sprint 1: Input ผิดรูปแบบ",
+              "<p>Non-numeric Input (เช่น abc) ทำให้เกิด ValueError จากการแปลงเป็น Integer ตรงๆ</p>",
+              "r1",
+            ) +
+              C(
+                "Sprint 2: Nested + Steam",
+                "<p>Genre/Platform ไม่ใช่ list ของ string · Steam App ID ไม่ตรง RAWG ID · API ถูกเรียกซ้ำมาก</p>",
+                "r2",
+              ) +
+              C(
+                "Sprint 3: Data ไม่ครบ",
+                "<p>บางเกมไม่มี Rating / Metacritic / Steam Players · Steam Player Count เปลี่ยนตลอด</p>",
+                "r3",
+              ) +
+              C(
+                "Final: คุณภาพข้อมูลและ UX",
+                "<p>rating=0 แสดงเหมือนคะแนนจริง · pagination ล้มเหลวแล้วการ์ดหาย · Home อ่านทั้งฐาน</p>",
+                "r3",
+              ) +
+              C(
+                "ข้อจำกัดที่ยังอยู่",
+                "<p>SQLite snapshot ไม่ใช่ cloud storage ถาวร · Steam Top อาจน้อยกว่า 100 เกม</p>",
+                "r1",
+              ) +
+              C(
+                "Sprint 2: QA ยังไม่ครบ",
+                "<p>Dashboard Tests รันไม่ครบ เพราะ environment ไม่มี streamlit</p>",
+                "r2",
+              ),
+          ),
+          n: "เล่าเป็นเรื่องของกระบวนการและข้อมูล ไม่โทษรายบุคคล",
+          src: "Whoops! ของ S1–S3; Final ปัญหา/ข้อจำกัด",
+        },
+        {
+          k: "Problems → Solutions",
+          h: "How We Turned Challenges into Improvements",
+          r: 2,
+          t: '<table><tr><th>Problem</th><th class="t1">Sprint 1–2</th><th class="t2">Sprint 3</th><th class="t3">Final Sprint</th></tr><tr><td>ข้อมูลไม่เรียบร้อย</td><td>Data Processing Layer จัดการ Nested RAWG</td><td>Functions Extract/Normalize · ไม่แทน Missing ด้วย 0</td><td>NaN/Infinity → missing · rating=0 → N/A</td></tr><tr><td>API / Steam เรียกซ้ำ</td><td>Snapshot + Refresh Interval</td><td>Refresh ผ่าน GameService + Timestamp</td><td>RAWG 24 ชม. / Steam 15 นาที</td></tr><tr><td>Input ผิดรูปแบบ</td><td>try-except + Validation (S1)</td><td>—</td><td>—</td></tr><tr><td>Test Dashboard</td><td>Dashboard Tests ยังไม่ครบ (S2)</td><td>Unit Tests + AppTest</td><td>AppTest 9 workflows (รายงาน QA)</td></tr></table><p class="sb" style="margin-top:.8cqw"><b>Lesson:</b> ออกแบบให้รับข้อมูลไม่สมบูรณ์ตั้งแต่ต้น และแยก Layer เพื่อทดสอบได้</p>',
+          n: "ปัญหาเดิมถูกปรับต่อเนื่องข้าม Sprint ตามที่เอกสารบันทึกไว้",
+          src: "Whoops! S1–S3; Final ปัญหา",
+        },
+        {
+          k: "Final Product & QA",
+          h: "What We Ultimately Delivered",
+          r: 3,
+          t:
+            '<div class="g" style="grid-template-columns:repeat(4,1fr)">' +
+            Q("128", "tests passed<br>workspace · clean copy", "r3") +
+            Q("9", "AppTest workflows<br>ไม่มี exception", "r3") +
+            Q("40,153", "records<br>SQLite integrity = ok", "r3") +
+            Q("50", "การ์ดต่อหน้า<br>Pagination", "r2") +
+            "</div>" +
+            cols(
+              2,
+              C(
+                "Capabilities",
+                "<p>Search · Game Info · Statistics (กราฟ 6 ชุด) · Filter / Sort · Comparison · Steam Live Players</p>",
+                "r2",
+              ) +
+                C(
+                  "ตามรายงาน QA (13 ต.ค.)",
+                  "<p>Compile / dependency · local server / health ผ่าน</p>",
+                  "r3",
+                ),
+            ).replace(
+              '<div class="g"',
+              '<div style="margin-top:1.1cqw" class="g"',
+            ) +
+            '<p class="sb warn" style="padding:.6cqw 1cqw;margin-top:1cqw">ผลทั้งหมดมาจาก docs/FINAL_QA.md ไม่ได้รันซ้ำโดยผู้จัดทำเอกสาร · ยังไม่มีหลักฐาน: GitHub CI และ deployed final commit</p>',
+          n: "แยกให้ชัดระหว่างผลที่รายงานไว้กับสิ่งที่ยังไม่ยืนยัน",
+          src: "Final ผลตรวจ, สิ่งที่ส่งมอบ",
+        },
+        {
+          k: "Takeaways",
+          h: "What We Learned from Four Sprints",
+          t:
+            cols(
+              3,
+              C(
+                "Feedback",
+                "<p>ปรับ Pitch, Plan, Log และ Metrics หลัง Sprint 1</p>",
+                "r1",
+              ) +
+                C(
+                  "Process",
+                  "<p>แยก Layer และกำหนด Scope ชัดทำให้ต่อยอดได้</p>",
+                  "r2",
+                ) +
+                C(
+                  "Data",
+                  "<p>ข้อมูลจริงไม่สมบูรณ์เสมอ ต้องออกแบบรองรับ</p>",
+                  "r3",
+                ) +
+                C(
+                  "Testing",
+                  "<p>จาก Manual QA → Automated Tests → AppTest</p>",
+                  "r3",
+                ) +
+                C(
+                  "Team",
+                  "<p>Role Rotation ทำให้ทุกคนเห็นทั้งการวางแผน พัฒนา และทดสอบ</p>",
+                  "r1",
+                ) +
+                C(
+                  "Quality",
+                  "<p>จากการสร้าง Feature → ทำให้ระบบเชื่อถือได้มากขึ้น</p>",
+                  "r2",
+                ),
+            ) +
+            '<p style="font-size:2cqw;font-weight:700;margin-top:1.2cqw">From building features to building a more reliable system.</p>',
+          n: "สรุปบทเรียนจากสิ่งที่เกิดขึ้นจริงในเอกสาร",
+          src: "ทั้ง 4 ไฟล์",
+        },
+        {
+          k: "Thank You",
+          c: 1,
+          r: 2,
+          t: '<h1>Thank You</h1><p style="font-size:2.3cqw;margin-top:1.2cqw;font-weight:700">Gaming Statistics Dashboard</p><p class="sb" style="margin-top:.5cqw">Questions &amp; Answers</p><p style="font-size:1.9cqw;margin-top:1.6cqw;line-height:1.5;color:var(--mu)">Four Sprints.<br>Three Team Members.<br>One Gaming Statistics Dashboard.</p>',
+          n: "ขอบคุณครับ พร้อมตอบคำถาม",
+          src: "—",
+        },
+      ];
+      var st = document.getElementById("st"),
+        i = 0;
+      S.forEach(function (s) {
+        var a = s.r ? "var(--s" + s.r + ")" : "var(--s2)";
+        var e = document.createElement("section");
+        e.className = "s";
+        e.style.setProperty("--ac", a);
+        e.innerHTML =
+          (s.c ? "" : "") +
+          '<div class="k" style="color:' +
+          a +
+          '">' +
+          s.k +
+          "</div>" +
+          (s.h ? "<h2>" + s.h + '</h2><div style="height:1cqw"></div>' : "") +
+          s.t +
+          '<div class="src">Source: ' +
+          s.src +
+          '</div><div class="nt">' +
+          s.n +
+          "</div>";
+        if (s.c) e.style.justifyContent = "center";
+        st.appendChild(e);
+      });
+      var E = [].slice.call(document.querySelectorAll(".s"));
+      function go(k) {
+        i = Math.max(0, Math.min(E.length - 1, k));
+        E.forEach(function (e, j) {
+          e.classList.toggle("on", j === i);
+        });
+        document.getElementById("c").textContent = i + 1 + " / " + E.length;
+        try {
+          location.hash = i + 1;
+        } catch (x) {}
+      }
+      document.getElementById("p").onclick = function () {
+        go(i - 1);
+      };
+      document.getElementById("x").onclick = function () {
+        go(i + 1);
+      };
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown")
+          go(i + 1);
+        if (e.key === "ArrowLeft" || e.key === "PageUp") go(i - 1);
+        if (e.key === "n" || e.key === "N") st.classList.toggle("sn");
+      });
+      go((parseInt(location.hash.slice(1)) || 1) - 1);
+    </script>
+  </body>
+</html>
