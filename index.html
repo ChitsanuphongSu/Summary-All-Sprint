@@ -372,7 +372,7 @@
               "<p>QA: 14 Test Cases, Passed 14, Critical Bugs 0</p>",
               "r1",
             ) +
-            '</div><p class="sb" style="margin-top:1.4cqw">ใช้ Local Sample Dataset · ยังไม่มี RAWG API / SQLite / Web UI · Role: คิม=Planner · ฟลุ๊ค=Coder · ออม=Debugger</p>',
+            '</div><p class="sb" style="margin-top:1.4cqw">ใช้ Local Sample Dataset · ยังไม่มี RAWG API / SQLite / Web UI · Role: ชิษณุพงศ์ ซู=Planner · ภานุวัฒน์ ผองแก้ว=Coder · เดโชชิต โตวินัส=Debugger</p>',
           n: "Sprint 1 จงใจจำกัดขอบเขตเพื่อทดสอบโครงสร้างพื้นฐานก่อน",
           src: "S1 §1–4, §15",
         },
@@ -511,6 +511,32 @@
             .replace('<div class="c ">', '<div class="c r3">'),
           n: "ภาพรวมสะสมของความสามารถทีละ Sprint",
           src: "ทั้ง 4 ไฟล์",
+        },
+        {
+          k: "Libraries & Tools",
+          h: "Libraries & Tools",
+          r: 2,
+          t:
+            '<p class="sb" style="margin-top:-1cqw">เครื่องมือและไลบรารีที่ใช้พัฒนา Gaming Statistics Dashboard · เขียนด้วย Python</p><b style="font-size:1.5cqw;color:var(--s2)">Python Libraries</b><div class="g" style="grid-template-columns:repeat(6,1fr);margin:.6cqw 0 1.4cqw">' +
+            C("Streamlit", "<p>Web App และ Dashboard</p>", "r2") +
+            C("Pandas", "<p>จัดการและวิเคราะห์ข้อมูลเป็น DataFrame</p>", "r3") +
+            C("Altair", "<p>สร้างกราฟ Visualization</p>", "r3") +
+            C("Requests", "<p>ส่ง HTTP Request ไปยัง API</p>", "r2") +
+            C(
+              "python-dotenv",
+              "<p>โหลด Environment Variables / API Key</p>",
+              "r2",
+            ) +
+            C("pytest", "<p>Automated Tests (+ Streamlit AppTest)</p>", "r3") +
+            '</div><b style="font-size:1.5cqw;color:var(--s1)">APIs · Database · Development Tools</b><div class="g" style="grid-template-columns:repeat(5,1fr);margin-top:.6cqw">' +
+            C("RAWG API", "<p>บริการข้อมูลเกม (External API)</p>", "r1") +
+            C("Steam API", "<p>บริการข้อมูลผู้เล่น (External API)</p>", "r1") +
+            C("SQLite", "<p>Local Database เก็บข้อมูลเกม</p>", "r1") +
+            C("Git / GitHub", "<p>Version Control และทำงานร่วมกัน</p>", "r1") +
+            C("VS Code", "<p>Editor ที่ใช้พัฒนา (ตาม Sprint 2)</p>", "r1") +
+            "</div>",
+          n: "ส่วนบนคือไลบรารี Python ส่วนล่างคือบริการภายนอก ฐานข้อมูล และเครื่องมือพัฒนา ซึ่งไม่ใช่ไลบรารี",
+          src: "S2 §7; S3 §9; Final_Sprint.md",
         },
         {
           k: "Team",
